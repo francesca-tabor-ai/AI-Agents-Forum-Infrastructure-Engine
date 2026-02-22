@@ -1,0 +1,9 @@
+# Railway / Nixpacks build config
+[phases.setup]
+nixPkgs = ["nodejs_20"]
+
+[phases.install]
+cmds = ["npm ci"]
+
+[variables]
+NODE_ENV = "production"

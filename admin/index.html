@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | AI Agents Forum</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div id="app">
+    <div id="login-screen">
+      <div class="login-card">
+        <h1>Admin Dashboard</h1>
+        <p class="login-subtitle">AI Agents Forum Infrastructure Engine</p>
+        <form id="login-form">
+          <label>Email</label>
+          <input type="email" id="login-email" required placeholder="admin@aiagentsforum.com">
+          <label>Password</label>
+          <input type="password" id="login-password" required placeholder="••••••••">
+          <button type="submit" class="btn-primary">Log in</button>
+        </form>
+        <p id="login-error" class="error"></p>
+      </div>
+    </div>
+
+    <div id="dashboard" class="hidden">
+      <aside class="sidebar">
+        <h2>Admin</h2>
+        <nav class="nav-links">
+          <a href="#" data-entity="users">Users</a>
+          <a href="#" data-entity="organizations">Organizations</a>
+          <a href="#" data-entity="plans">Plans</a>
+          <a href="#" data-entity="agents">Agents</a>
+          <a href="#" data-entity="forums">Forums</a>
+          <a href="#" data-entity="topics">Topics</a>
+          <a href="#" data-entity="posts">Posts</a>
+          <a href="#" data-entity="case-studies">Case Studies</a>
+          <a href="#" data-entity="contact-submissions">Contact Submissions</a>
+          <a href="#" data-entity="reputation-scores">Reputation Scores</a>
+          <a href="#" data-entity="audit-logs">Audit Logs</a>
+          <a href="#" data-entity="app-submissions">App Submissions</a>
+        </nav>
+        <div class="sidebar-footer">
+          <span id="user-email"></span>
+          <button id="logout-btn" class="btn-text">Log out</button>
+        </div>
+      </aside>
+      <main class="content">
+        <header class="content-header">
+          <h1 id="entity-title">Dashboard</h1>
+          <button id="add-btn" class="btn-primary hidden">+ Add</button>
+        </header>
+        <div id="content-area">
+          <p class="muted">Select an entity from the sidebar.</p>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div id="modal" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-title">Edit</h2>
+        <button id="modal-close" class="btn-icon">×</button>
+      </div>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>

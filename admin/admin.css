@@ -1,0 +1,114 @@
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+
+#login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.login-card {
+  background: #1e293b;
+  padding: 2.5rem;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,.5);
+}
+.login-card h1 { margin: 0 0 0.25rem; font-size: 1.5rem; }
+.login-subtitle { color: #94a3b8; font-size: 0.9rem; margin-bottom: 1.5rem; }
+.login-card form { display: flex; flex-direction: column; gap: 0.75rem; }
+.login-card label { font-size: 0.85rem; color: #94a3b8; }
+.login-card input {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-size: 1rem;
+}
+.login-card input:focus { outline: none; border-color: #3b82f6; }
+.error { color: #f87171; font-size: 0.9rem; margin-top: 0.5rem; }
+
+.hidden { display: none !important; }
+
+#dashboard { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 240px;
+  background: #1e293b;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar h2 { font-size: 1.1rem; margin: 0 0 1rem; }
+.nav-links { flex: 1; display: flex; flex-direction: column; gap: 0.25rem; }
+.nav-links a {
+  padding: 0.5rem 0.75rem;
+  color: #94a3b8;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+.nav-links a:hover, .nav-links a.active { background: #334155; color: #e2e8f0; }
+.sidebar-footer {
+  padding-top: 1rem;
+  border-top: 1px solid #334155;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+#logout-btn { background: none; border: none; color: #3b82f6; cursor: pointer; font-size: 0.9rem; }
+#logout-btn:hover { text-decoration: underline; }
+
+.content { flex: 1; padding: 1.5rem; overflow: auto; }
+.content-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+.content-header h1 { margin: 0; font-size: 1.5rem; }
+.muted { color: #64748b; }
+
+/* Buttons */
+.btn-primary { background: #3b82f6; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.9rem; }
+.btn-primary:hover { background: #2563eb; }
+.btn-secondary { background: #334155; color: #e2e8f0; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.9rem; }
+.btn-secondary:hover { background: #475569; }
+.btn-text { background: none; color: inherit; border: none; cursor: pointer; }
+.btn-danger { background: #dc2626; color: white; }
+.btn-danger:hover { background: #b91c1c; }
+.btn-icon { background: none; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer; line-height: 1; }
+.btn-icon:hover { color: #e2e8f0; }
+
+/* Table */
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 0.6rem 0.75rem; text-align: left; border-bottom: 1px solid #334155; }
+th { color: #94a3b8; font-weight: 500; font-size: 0.85rem; }
+tr:hover { background: #1e293b; }
+.actions { display: flex; gap: 0.5rem; }
+.actions button { padding: 0.3rem 0.5rem; font-size: 0.8rem; }
+
+/* Modal */
+.modal { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+.modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.6); }
+.modal-content {
+  position: relative;
+  background: #1e293b;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow: auto;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,.5);
+}
+.modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid #334155; }
+.modal-header h2 { margin: 0; font-size: 1.1rem; }
+#modal-body { padding: 1.5rem; }
+.modal-form { display: flex; flex-direction: column; gap: 1rem; }
+.modal-form label { font-size: 0.9rem; color: #94a3b8; }
+.modal-form input, .modal-form select, .modal-form textarea {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-size: 1rem;
+}
+.modal-form textarea { min-height: 100px; resize: vertical; }
+.modal-actions { display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1rem; }

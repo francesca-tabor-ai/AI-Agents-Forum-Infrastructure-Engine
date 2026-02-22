@@ -51,4 +51,57 @@ Competitors either require heavy customization (high cost, long time-to-value) o
 
 ## Getting Started
 
-*(Add installation, configuration, and usage instructions here.)*
+### Prerequisites
+
+- Node.js 18+
+- PostgreSQL (or use Railway's hosted PostgreSQL)
+
+### Local Development
+
+1. **Install dependencies**
+
+   ```bash
+   npm install
+   ```
+
+2. **Configure environment**
+
+   Copy `.env.local` and ensure `DATABASE_URL` points to your PostgreSQL instance. For local dev, use Railway's public database URL (not `postgres.railway.internal`).
+
+3. **Run database migrations and seed**
+
+   ```bash
+   npx prisma generate
+   npx prisma migrate dev
+   npm run db:seed
+   ```
+
+4. **Start the server**
+
+   ```bash
+   npm run dev
+   ```
+
+   The API runs at `http://localhost:3000`. Open `http://localhost:3000/admin` for the admin dashboard.
+
+### Railway Deployment
+
+1. Connect your repo to Railway.
+2. Add a PostgreSQL service and link it to your app.
+3. Set environment variables: `DATABASE_URL`, `JWT_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`.
+4. Deploy. Railway runs `db:migrate` then `npm start` on deploy.
+5. Run the seed manually once: `npm run db:seed` (via Railway CLI or a one-off task).
+
+### API Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/api/auth/signup` | User sign up |
+| POST | `/api/auth/login` | User log in |
+| POST | `/api/contact` | Contact form submission |
+| GET | `/admin` | Admin dashboard (HTML) |
+| GET/POST/PATCH/DELETE | `/api/admin/*` | Admin CRUD (requires admin JWT) |
+
+### Admin Credentials
+
+See [ADMIN_CREDENTIALS.md](./ADMIN_CREDENTIALS.md) for default admin login credentials.

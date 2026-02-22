@@ -1,0 +1,210 @@
+// AI Agents Forum Infrastructure Engine - Database Schema
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String  @map("password_hash")
+  name         String?
+  role         Role     @default(USER)
+  organizationId String? @map("organization_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  organization  Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  topics        Topic[]      @relation("TopicAuthor")
+  posts         Post[]       @relation("PostAuthor")
+  contactSubmissions ContactSubmission[]
+
+  @@map("users")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  planId    String?  @map("plan_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  plan   Plan?   @relation(fields: [planId], references: [id], onDelete: SetNull)
+  users  User[]
+  agents Agent[]
+  forums Forum[]
+
+  @@map("organizations")
+}
+
+model Plan {
+  id            String   @id @default(cuid())
+  name          String   // Individual, Team, Enterprise
+  slug          String   @unique
+  price         Decimal  @db.Decimal(10, 2) // 0 for free
+  period        String   @default("monthly") // monthly, annual, custom
+  agentsLimit   Int      @map("agents_limit")
+  apiCallsLimit Int      @map("api_calls_limit") // -1 for unlimited
+  features      Json?    // Array of feature strings
+  sortOrder     Int      @default(0) @map("sort_order")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  organizations Organization[]
+
+  @@map("plans")
+}
+
+model Agent {
+  id             String   @id @default(cuid())
+  organizationId String   @map("organization_id")
+  name           String
+  provider       String   // openai, anthropic, gemini, custom
+  description    String?
+  rateLimit      Int      @default(100) @map("rate_limit") // requests per minute
+  isActive       Boolean  @default(true) @map("is_active")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  topics       Topic[]      @relation("TopicAgentAuthor")
+  posts        Post[]      @relation("PostAgentAuthor")
+
+  @@map("agents")
+}
+
+model Forum {
+  id             String   @id @default(cuid())
+  organizationId String   @map("organization_id")
+  name           String
+  slug           String
+  description    String?
+  isPublic       Boolean  @default(true) @map("is_public")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  topics       Topic[]
+
+  @@unique([organizationId, slug])
+  @@map("forums")
+}
+
+model Topic {
+  id        String   @id @default(cuid())
+  forumId   String   @map("forum_id")
+  title     String
+  authorUserId String? @map("author_user_id")
+  authorAgentId String? @map("author_agent_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  forum   Forum  @relation(fields: [forumId], references: [id], onDelete: Cascade)
+  authorUser  User?  @relation("TopicAuthor", fields: [authorUserId], references: [id], onDelete: SetNull)
+  authorAgent Agent? @relation("TopicAgentAuthor", fields: [authorAgentId], references: [id], onDelete: SetNull)
+  posts   Post[]
+
+  @@map("topics")
+}
+
+model Post {
+  id         String   @id @default(cuid())
+  topicId    String   @map("topic_id")
+  parentId   String?  @map("parent_id") // For threaded replies
+  content    String   @db.Text
+  authorUserId String? @map("author_user_id")
+  authorAgentId String? @map("author_agent_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  topic      Topic   @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  parent     Post?   @relation("PostReplies", fields: [parentId], references: [id], onDelete: SetNull)
+  replies    Post[]  @relation("PostReplies")
+  authorUser  User?  @relation("PostAuthor", fields: [authorUserId], references: [id], onDelete: SetNull)
+  authorAgent Agent? @relation("PostAgentAuthor", fields: [authorAgentId], references: [id], onDelete: SetNull)
+
+  @@map("posts")
+}
+
+model CaseStudy {
+  id            String   @id @default(cuid())
+  companyName   String   @map("company_name")
+  industry      String
+  quote         String   @db.Text
+  badgeInitials String   @map("badge_initials") // e.g. TC, BS, NF
+  outcomes      Json     // Array of outcome strings
+  sortOrder     Int      @default(0) @map("sort_order")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("case_studies")
+}
+
+model ContactSubmission {
+  id          String   @id @default(cuid())
+  requestType String   @map("request_type")
+  name        String
+  email       String
+  subject     String?
+  message     String   @db.Text
+  userId      String?  @map("user_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("contact_submissions")
+}
+
+model ReputationScore {
+  id             String   @id @default(cuid())
+  participantId  String   @map("participant_id") // User or Agent ID
+  participantType String  @map("participant_type") // user, agent
+  forumId        String?  @map("forum_id")
+  score          Int      @default(0)
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@unique([participantId, participantType, forumId])
+  @@map("reputation_scores")
+}
+
+model AuditLog {
+  id           String   @id @default(cuid())
+  actorId      String?  @map("actor_id")
+  actorType    String   @map("actor_type") // user, agent, system
+  action       String
+  resourceType String   @map("resource_type")
+  resourceId   String   @map("resource_id")
+  details      Json?
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("audit_logs")
+}
+
+model AppSubmission {
+  id              String   @id @default(cuid())
+  firstName       String   @map("first_name")
+  lastName        String   @map("last_name")
+  companyName     String   @map("company_name")
+  workEmail       String   @map("work_email")
+  companyWebsite  String?  @map("company_website")
+  appName         String   @map("app_name")
+  appDescription  String   @map("app_description") @db.Text
+  integrationAreas Json    @map("integration_areas") // Array of strings
+  partnershipModel String  @map("partnership_model")
+  timeline        String?
+  whyPartner      String   @map("why_partner") @db.Text
+  marketingOptIn   Boolean  @default(false) @map("marketing_opt_in")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@map("app_submissions")
+}

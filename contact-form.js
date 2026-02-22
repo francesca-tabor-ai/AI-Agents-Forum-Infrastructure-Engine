@@ -1,13 +1,13 @@
 /**
- * Contact form - pre-fills mailto to info@francescatabor.com
- * Submits via mailto with structured subject and body
+ * Contact form - submits to /api/contact and stores in database
  */
 (function () {
   'use strict';
 
-  const RECIPIENT = 'info@francescatabor.com';
+  const form = document.getElementById('contact-form');
+  if (!form) return;
 
-  document.getElementById('contact-form').addEventListener('submit', function (e) {
+  form.addEventListener('submit', async function (e) {
     e.preventDefault();
 
     const requestType = document.getElementById('request-type').value;
@@ -16,20 +16,55 @@
     const subject = document.getElementById('subject').value.trim();
     const message = document.getElementById('message').value.trim();
 
-    const subjectLine = subject
-      ? `[${requestType}] ${subject}`
-      : `[${requestType}] Contact form submission`;
+    if (!requestType || !name || !email || !message) {
+      showMessage('Please fill in all required fields.', 'error');
+      return;
+    }
 
-    const body = [
-      `Request Type: ${requestType}`,
-      `Name: ${name}`,
-      `Email: ${email}`,
-      '',
-      message
-    ].join('\n');
+    const btn = form.querySelector('button[type="submit"]');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
 
-    const mailto = `mailto:${encodeURIComponent(RECIPIENT)}?subject=${encodeURIComponent(subjectLine)}&body=${encodeURIComponent(body)}`;
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          requestType,
+          name,
+          email,
+          subject: subject || null,
+          message,
+        }),
+      });
 
-    window.location.href = mailto;
+      const json = await res.json();
+
+      if (!res.ok) {
+        throw new Error(json.error || 'Failed to send message');
+      }
+
+      showMessage('Thank you for your message. We\'ll get back to you soon.', 'success');
+      form.reset();
+    } catch (err) {
+      showMessage(err.message || 'Something went wrong. Please try again.', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
   });
+
+  function showMessage(text, type) {
+    let el = document.getElementById('contact-form-message');
+    if (!el) {
+      el = document.createElement('p');
+      el.id = 'contact-form-message';
+      el.setAttribute('role', 'alert');
+      form.insertBefore(el, form.querySelector('button[type="submit"]'));
+    }
+    el.textContent = text;
+    el.className = type === 'success' ? 'contact-success' : 'contact-error';
+    el.style.display = 'block';
+  }
 })();

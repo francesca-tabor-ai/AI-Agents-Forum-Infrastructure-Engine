@@ -892,6 +892,18 @@ section h2 {
   align-self: flex-start;
 }
 
+.contact-success {
+  color: var(--color-accent);
+  font-size: 0.9375rem;
+  margin-top: 0.5rem;
+}
+
+.contact-error {
+  color: #dc2626;
+  font-size: 0.9375rem;
+  margin-top: 0.5rem;
+}
+
 /* ========== CHAT WIDGET ========== */
 #chat-widget {
   position: fixed;
