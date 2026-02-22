@@ -3,8 +3,5 @@
 .env.local
 .env.*.local
 
-# Admin credentials (contains default password - change in production)
-ADMIN_CREDENTIALS.md
-
 # Dependencies
 node_modules/

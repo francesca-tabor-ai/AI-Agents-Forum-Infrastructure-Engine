@@ -222,4 +222,3 @@ ALTER TABLE "posts" ADD CONSTRAINT "posts_author_agent_id_fkey" FOREIGN KEY ("au
 
 -- AddForeignKey
 ALTER TABLE "contact_submissions" ADD CONSTRAINT "contact_submissions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-

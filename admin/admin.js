@@ -200,7 +200,7 @@ const ENTITIES = {
     title: 'App Submissions',
     path: '/admin/app-submissions',
     fields: [],
-    tableCols: ['firstName', 'lastName', 'companyName', 'appName', 'createdAt'],
+    tableCols: ['firstName', 'lastName', 'companyName', 'workEmail', 'appName', 'partnershipModel', 'createdAt'],
     readOnly: true,
   },
 };
