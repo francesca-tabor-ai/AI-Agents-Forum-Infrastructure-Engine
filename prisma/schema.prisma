@@ -22,6 +22,7 @@ model User {
   topics        Topic[]      @relation("TopicAuthor")
   posts         Post[]       @relation("PostAuthor")
   contactSubmissions ContactSubmission[]
+  assessments   Assessment[]
 
   @@map("users")
 }
@@ -38,10 +39,11 @@ model Organization {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  plan   Plan?   @relation(fields: [planId], references: [id], onDelete: SetNull)
-  users  User[]
-  agents Agent[]
-  forums Forum[]
+  plan         Plan?          @relation(fields: [planId], references: [id], onDelete: SetNull)
+  users        User[]
+  agents       Agent[]
+  forums       Forum[]
+  assessments  Assessment[]
 
   @@map("organizations")
 }
@@ -207,4 +209,113 @@ model AppSubmission {
   createdAt       DateTime @default(now()) @map("created_at")
 
   @@map("app_submissions")
+}
+
+// ============ AI Readiness Assessment (Phase 2) ============
+
+model AssessmentQuestion {
+  id          String   @id @default(cuid())
+  category    String   // data_maturity, infrastructure, security, culture, regulatory, etc.
+  categoryLabel String @map("category_label")
+  questionText String  @map("question_text") @db.Text
+  options     Json     // [{ value, label, score }]
+  weight      Int      @default(1)  // 1-3, higher = more important
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  responses   AssessmentResponse[]
+
+  @@map("assessment_questions")
+}
+
+model Assessment {
+  id              String   @id @default(cuid())
+  userId          String?  @map("user_id")
+  organizationId  String?  @map("organization_id")
+  status          String   @default("draft") // draft | submitted
+  overallScore    Int?     @map("overall_score") // 0-100
+  categoryScores  Json?    @map("category_scores") // { category: score }
+  recommendations Json?    // Array of { priority, title, description, category }
+  riskHeatmap     Json?    @map("risk_heatmap") // { category: risk_level }
+  submittedAt     DateTime? @map("submitted_at")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  user       User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  responses  AssessmentResponse[]
+
+  @@map("assessments")
+}
+
+model AssessmentResponse {
+  id              String   @id @default(cuid())
+  assessmentId    String   @map("assessment_id")
+  questionId      String   @map("question_id")
+  answerValue     String   @map("answer_value") // Selected option value
+  scoreContribution Int?   @map("score_contribution") // Points contributed
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  question   AssessmentQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([assessmentId, questionId])
+  @@map("assessment_responses")
+}
+
+// ============ AI Agent Marketplace (Phase 3) ============
+
+model Vendor {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?  @db.Text
+  website     String?
+  logoUrl     String?  @map("logo_url")
+  isVerified  Boolean  @default(false) @map("is_verified")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  agents      MarketplaceAgent[]
+
+  @@map("vendors")
+}
+
+model AgentCategory {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?  @db.Text
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  agents      MarketplaceAgent[]
+
+  @@map("agent_categories")
+}
+
+model MarketplaceAgent {
+  id                    String   @id @default(cuid())
+  vendorId              String   @map("vendor_id")
+  categoryId            String?  @map("category_id")
+  name                  String
+  slug                  String
+  description           String?  @db.Text
+  useCase               String?  @map("use_case") // e.g. Customer Support, Sales, HR
+  integrationRequirements Json?  @map("integration_requirements") // Array of required integrations
+  dataRequirements      Json?   @map("data_requirements") // What data the agent needs
+  governanceScore       Int?    @map("governance_score") // 0-100
+  roiEstimate           Json?   @map("roi_estimate") // { metric, range, description }
+  isVerified            Boolean  @default(false) @map("is_verified")
+  isActive              Boolean  @default(true) @map("is_active")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  vendor   Vendor         @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  category AgentCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@unique([vendorId, slug])
+  @@map("marketplace_agents")
 }

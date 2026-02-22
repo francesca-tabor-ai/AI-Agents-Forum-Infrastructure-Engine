@@ -136,6 +136,200 @@ async function seed() {
     console.log('Case studies seeded: 3');
   }
 
+  // AI Readiness Assessment questions (8 questions)
+  const questionCount = await prisma.assessmentQuestion.count();
+  if (questionCount === 0) {
+    await prisma.assessmentQuestion.createMany({
+      data: [
+        {
+          category: 'data_maturity',
+          categoryLabel: 'Data Maturity',
+          questionText: 'How would you describe your organisation\'s data governance and quality maturity?',
+          options: [
+            { value: 'ad_hoc', label: 'Ad-hoc: Data scattered, no formal governance', score: 0 },
+            { value: 'emerging', label: 'Emerging: Some documentation, inconsistent standards', score: 25 },
+            { value: 'defined', label: 'Defined: Documented policies, centralised catalogues', score: 50 },
+            { value: 'managed', label: 'Managed: Automated quality checks, lineage tracking', score: 75 },
+            { value: 'optimising', label: 'Optimising: Data mesh/fabric, real-time quality', score: 100 },
+          ],
+          weight: 2,
+          sortOrder: 1,
+        },
+        {
+          category: 'infrastructure',
+          categoryLabel: 'Infrastructure',
+          questionText: 'What is your current infrastructure readiness for AI workloads?',
+          options: [
+            { value: 'legacy', label: 'Legacy: On-prem only, limited cloud', score: 0 },
+            { value: 'hybrid', label: 'Hybrid: Some cloud, manual provisioning', score: 25 },
+            { value: 'cloud_first', label: 'Cloud-first: Primary workloads in cloud', score: 50 },
+            { value: 'modern', label: 'Modern: IaC, containerisation, autoscaling', score: 75 },
+            { value: 'ai_native', label: 'AI-native: GPU clusters, MLOps pipelines', score: 100 },
+          ],
+          weight: 2,
+          sortOrder: 2,
+        },
+        {
+          category: 'security',
+          categoryLabel: 'Security Posture',
+          questionText: 'How mature is your security and access control for AI systems?',
+          options: [
+            { value: 'basic', label: 'Basic: Passwords, ad-hoc permissions', score: 0 },
+            { value: 'standard', label: 'Standard: RBAC, some encryption', score: 25 },
+            { value: 'strong', label: 'Strong: SSO, encryption at rest/transit', score: 50 },
+            { value: 'advanced', label: 'Advanced: Zero trust, secret management', score: 75 },
+            { value: 'soc2', label: 'SOC 2 / ISO: Audited, compliance-ready', score: 100 },
+          ],
+          weight: 2,
+          sortOrder: 3,
+        },
+        {
+          category: 'culture',
+          categoryLabel: 'Organisational Culture',
+          questionText: 'How would you describe your organisation\'s readiness for AI adoption?',
+          options: [
+            { value: 'resistant', label: 'Resistant: Sceptical, fear of job loss', score: 0 },
+            { value: 'exploring', label: 'Exploring: Some pilot interest, no strategy', score: 25 },
+            { value: 'aligned', label: 'Aligned: Executive buy-in, pilot programs', score: 50 },
+            { value: 'committed', label: 'Committed: AI roadmap, dedicated teams', score: 75 },
+            { value: 'embedded', label: 'Embedded: AI-first mindset, continuous learning', score: 100 },
+          ],
+          weight: 1,
+          sortOrder: 4,
+        },
+        {
+          category: 'regulatory',
+          categoryLabel: 'Regulatory & Compliance',
+          questionText: 'What is your regulatory exposure and compliance maturity for AI?',
+          options: [
+            { value: 'unaware', label: 'Unaware: No formal consideration', score: 0 },
+            { value: 'assessing', label: 'Assessing: Evaluating implications', score: 25 },
+            { value: 'addressing', label: 'Addressing: Policies in development', score: 50 },
+            { value: 'compliant', label: 'Compliant: Documented controls, regular audits', score: 75 },
+            { value: 'leading', label: 'Leading: Proactive governance, industry benchmark', score: 100 },
+          ],
+          weight: 2,
+          sortOrder: 5,
+        },
+        {
+          category: 'data_maturity',
+          categoryLabel: 'Data Maturity',
+          questionText: 'Do you have structured, accessible data for AI training and inference?',
+          options: [
+            { value: 'no', label: 'No: Data locked in legacy systems', score: 0 },
+            { value: 'partial', label: 'Partial: Some APIs, manual exports', score: 25 },
+            { value: 'structured', label: 'Structured: Data warehouses, documented schemas', score: 50 },
+            { value: 'integrated', label: 'Integrated: Real-time pipelines, feature stores', score: 75 },
+            { value: 'ai_ready', label: 'AI-ready: Labeled datasets, versioning', score: 100 },
+          ],
+          weight: 2,
+          sortOrder: 6,
+        },
+        {
+          category: 'infrastructure',
+          categoryLabel: 'Infrastructure',
+          questionText: 'How do you currently deploy and monitor AI models/agents?',
+          options: [
+            { value: 'manual', label: 'Manual: No formal process', score: 0 },
+            { value: 'ad_hoc', label: 'Ad-hoc: Some scripts, no monitoring', score: 25 },
+            { value: 'standardised', label: 'Standardised: CI/CD for models', score: 50 },
+            { value: 'automated', label: 'Automated: Full pipeline, basic observability', score: 75 },
+            { value: 'mlops', label: 'MLOps: A/B tests, drift detection, rollback', score: 100 },
+          ],
+          weight: 1,
+          sortOrder: 7,
+        },
+        {
+          category: 'risk',
+          categoryLabel: 'Risk & Governance',
+          questionText: 'Do you have governance for AI decision-making and audit trails?',
+          options: [
+            { value: 'none', label: 'None: No formal governance', score: 0 },
+            { value: 'planned', label: 'Planned: Governance on roadmap', score: 25 },
+            { value: 'manual', label: 'Manual: Spreadsheet tracking, ad-hoc reviews', score: 50 },
+            { value: 'systematic', label: 'Systematic: Decision logs, periodic audits', score: 75 },
+            { value: 'comprehensive', label: 'Comprehensive: Immutable audit trail, bias monitoring', score: 100 },
+          ],
+          weight: 2,
+          sortOrder: 8,
+        },
+      ],
+    });
+    console.log('Assessment questions seeded: 8');
+  }
+
+  // Agent marketplace: vendors and categories
+  const vendorCount = await prisma.vendor.count();
+  if (vendorCount === 0) {
+    await prisma.agentCategory.createMany({
+      data: [
+        { name: 'Customer Support', slug: 'customer-support', description: 'Agents for support tickets, FAQs, and customer inquiries', sortOrder: 1 },
+        { name: 'Sales & CRM', slug: 'sales-crm', description: 'Agents for lead qualification, pipeline, and sales automation', sortOrder: 2 },
+        { name: 'HR & People', slug: 'hr-people', description: 'Agents for onboarding, internal Q&A, and people operations', sortOrder: 3 },
+        { name: 'Document & Knowledge', slug: 'document-knowledge', description: 'Agents for search, summarisation, and knowledge management', sortOrder: 4 },
+        { name: 'DevOps & Engineering', slug: 'devops-engineering', description: 'Agents for code review, debugging, and deployment', sortOrder: 5 },
+      ],
+    });
+    const categories = await prisma.agentCategory.findMany({ orderBy: { sortOrder: 'asc' } });
+
+    const vendor1 = await prisma.vendor.create({
+      data: {
+        name: 'AI Agents Forum',
+        slug: 'ai-agents-forum',
+        description: 'Official agents for forum infrastructure and community engagement',
+        website: 'https://aiagentsforum.com',
+        isVerified: true,
+      },
+    });
+
+    const vendor2 = await prisma.vendor.create({
+      data: {
+        name: 'BuildStack',
+        slug: 'buildstack',
+        description: 'Developer tools and community agents',
+        website: 'https://buildstack.io',
+        isVerified: false,
+      },
+    });
+
+    const catSupport = categories.find((c) => c.slug === 'customer-support');
+    await prisma.marketplaceAgent.create({
+      data: {
+        vendorId: vendor1.id,
+        categoryId: catSupport?.id,
+        name: 'SupportBot Pro',
+        slug: 'supportbot-pro',
+        description: 'Handles common support questions, routes to humans when needed, learns from resolution history.',
+        useCase: 'Customer Support',
+        integrationRequirements: ['Zendesk', 'Intercom', 'Slack'],
+        dataRequirements: ['Support KB', 'Ticket history', 'Product docs'],
+        governanceScore: 85,
+        roiEstimate: { metric: 'Resolution time', range: '30–50% reduction', description: 'Faster first response and deflection' },
+        isVerified: true,
+        isActive: true,
+      },
+    });
+
+    await prisma.marketplaceAgent.create({
+      data: {
+        vendorId: vendor2.id,
+        categoryId: catSupport?.id,
+        name: 'DevHelper',
+        slug: 'devhelper',
+        description: 'Answers technical questions in developer communities. Integrates with GitHub and Stack Overflow.',
+        useCase: 'Developer Support',
+        integrationRequirements: ['GitHub', 'Slack', 'Discord'],
+        dataRequirements: ['Codebase index', 'Documentation', 'Changelog'],
+        governanceScore: 72,
+        roiEstimate: { metric: 'Moderator load', range: '40% reduction', description: 'Fewer human moderators needed' },
+        isVerified: false,
+        isActive: true,
+      },
+    });
+
+    console.log('Marketplace: vendors, categories, and sample agents seeded');
+  }
+
   console.log('Seed complete.');
 }
 

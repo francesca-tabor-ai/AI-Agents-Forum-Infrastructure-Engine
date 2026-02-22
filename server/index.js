@@ -11,6 +11,7 @@ import { fileURLToPath } from 'url';
 import { authRouter } from './routes/auth.js';
 import { adminRouter } from './routes/admin.js';
 import { apiRouter } from './routes/api.js';
+import { assessmentsRouter } from './routes/assessments.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -32,6 +33,7 @@ app.use(express.static(path.join(__dirname, '..')));
 // API routes
 app.use('/api/auth', authRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api', assessmentsRouter);
 app.use('/api', apiRouter);
 
 // Health check for Railway

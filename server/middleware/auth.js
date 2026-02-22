@@ -41,3 +41,20 @@ export async function attachUser(req, res, next) {
   }
   next();
 }
+
+/** Optional auth - sets req.userId if valid token present, does not fail if absent */
+export function optionalAuthMiddleware(req, res, next) {
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
+
+  if (!token) return next();
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.userId = decoded.userId;
+    req.userRole = decoded.role;
+  } catch (err) {
+    // Invalid/expired - continue without auth
+  }
+  next();
+}
